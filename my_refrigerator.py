@@ -43,8 +43,25 @@ def refrigerator():
     top1=Toplevel()
     top1.title("냉장고 안")
     top1.geometry("500x500")
-    l1 = Label(top1, text = foodlist)
-    l1.pack()
+    foodlist.sort(key=lambda x: x[2])
+
+    def warning_message(): #유통기한까지 남은 일수에 따라 나타나는 경고 메세지
+        for i in range(0,len(foodlist)):
+            if(foodlist[i][2]<0):
+                foodMsglabel = Label(top1,text=(foodlist[i],"유통기한이 지났군요!! 먹으면 위험할 듯한데..."),fg = "dark red")
+                foodMsglabel.pack()
+            elif(foodlist[i][2]<=2):
+                foodMsglabel = Label(top1,text=(foodlist[i],"유통기한이 얼마 안 남았어요!! 얼른 드시길..."),fg = "coral")
+                foodMsglabel.pack()
+            elif(foodlist[i][2]<=5):
+                foodMsglabel = Label(top1,text=(foodlist[i],"조만간 드셔야겠네요!^^"),fg = "dark green")
+                foodMsglabel.pack()
+            else:
+                foodMsglabel = Label(top1,text=(foodlist[i],"유통기한이 넉넉하네요!! 먹고 싶을 때 드세요~^^"))
+                foodMsglabel.pack()
+    
+    warning_message()
+
  
 def input_done(): #입력된 음식, 개수, 남은 일수를 리스트에 저장하는 함수 
     global food
@@ -73,6 +90,7 @@ def expired_date_food(): #유통기한이 지난 음식을 date_expired_list에 
                 continue
             else :
                 date_expired_list.append(foodlist[i])
+        date_expired_list.sort(key=lambda x:x[2])
     #l1 = Label(top1, text = date_expired_list)
     #l1.pack()
     for i in range(0,len(date_expired_list)):
@@ -80,8 +98,6 @@ def expired_date_food(): #유통기한이 지난 음식을 date_expired_list에 
         labels[i].grid(row=i, column=0)
         buttons.append(Button(top1,text='지우기',width=10))
         buttons[i].grid(row=i, column=1)
-
-
 
 def erase_food(): #먹은 음식의 이름, 수량을 입력하는 함수
     top1=Toplevel()
