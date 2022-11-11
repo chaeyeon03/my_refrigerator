@@ -11,6 +11,7 @@ now = datetime.now()
 foodlist=[]
 date_expired_list=[]
 erase_foodlist=[]
+update_erase_food=[]
 
 def input_food(): #음식, 개수, 유통기한을 입력하는 함수
     top1 = Toplevel()
@@ -80,8 +81,6 @@ def input_done(): #입력된 음식, 개수, 남은 일수를 리스트에 저�
 
 def expired_date_food(): #유통기한이 지난 음식을 date_expired_list에 저장하는 함수
     top1=Toplevel()
-    labels=[]
-    buttons=[]
     top1.title("유통기한 지난 음식")
     top1.geometry("300x300")
     for i in range(0,len(foodlist)):
@@ -91,14 +90,29 @@ def expired_date_food(): #유통기한이 지난 음식을 date_expired_list에 
             else :
                 date_expired_list.append(foodlist[i])
         date_expired_list.sort(key=lambda x:x[2])
-    #l1 = Label(top1, text = date_expired_list)
-    #l1.pack()
-    for i in range(0,len(date_expired_list)):
-        labels.append(Label(top1, text = date_expired_list[i],padx=10))
-        labels[i].grid(row=i, column=0)
-        buttons.append(Button(top1,text='지우기',width=10))
-        buttons[i].grid(row=i, column=1)
+    
+    global listbox
+    listbox = Listbox(top1, selectmode = 'extended')
+    for i in range (0, len(date_expired_list)):
+        listbox.insert(i,date_expired_list[i])
+    listbox.pack()
 
+    btn = Button(top1, text ="삭제",command = delete_anchor)
+    btn.pack()
+
+    
+def delete_anchor():
+    a = listbox.get(ANCHOR)
+    update_erase_food.append(list(a))
+    print(update_erase_food)
+    global date_expired_list
+    for i in range(0, len(update_erase_food)):
+        if update_erase_food[i] in date_expired_list:
+           date_expired_list.remove(update_erase_food[i])
+           foodlist.remove(update_erase_food[i])
+           
+            
+        
 def erase_food(): #먹은 음식의 이름, 수량을 입력하는 함수
     top1=Toplevel()
     top1.title("먹은 음식 지우기")
