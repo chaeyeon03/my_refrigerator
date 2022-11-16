@@ -10,8 +10,6 @@ now = datetime.now()
 
 foodlist=[]
 date_expired_list=[]
-erase_foodlist=[]
-update_erase_food=[]
 
 def input_food(): #음식, 개수, 유통기한을 입력하는 함수
     top1 = Toplevel()
@@ -45,20 +43,22 @@ def refrigerator():
     top1.title("냉장고 안")
     top1.geometry("500x500")
     foodlist.sort(key=lambda x: x[2])
+    top_msg = Label(top1)
+    top_msg.pack()
 
     def warning_message(): #유통기한까지 남은 일수에 따라 나타나는 경고 메세지
         for i in range(0,len(foodlist)):
             if(foodlist[i][2]<0):
-                foodMsglabel = Label(top1,text=(foodlist[i],"유통기한이 지났군요!! 먹으면 위험할 듯한데..."),fg = "dark red")
+                foodMsglabel = Label(top1,text=(str(foodlist[i][0])+' '+str(foodlist[i][1])+'개  '+str(foodlist[i][2])+'일  '+'-> 유통기한이 지났군요!! 먹으면 위험할 듯한데...'),fg = "dark red")
                 foodMsglabel.pack()
             elif(foodlist[i][2]<=2):
-                foodMsglabel = Label(top1,text=(foodlist[i],"유통기한이 얼마 안 남았어요!! 얼른 드시길..."),fg = "coral")
+                foodMsglabel = Label(top1,text=(str(foodlist[i][0])+' '+str(foodlist[i][1])+'개  '+str(foodlist[i][2])+'일  '+"-> 유통기한이 얼마 안 남았어요!! 얼른 드시길..."),fg = "coral")
                 foodMsglabel.pack()
             elif(foodlist[i][2]<=5):
-                foodMsglabel = Label(top1,text=(foodlist[i],"조만간 드셔야겠네요!^^"),fg = "dark green")
+                foodMsglabel = Label(top1,text=(str(foodlist[i][0])+' '+str(foodlist[i][1])+'개  '+str(foodlist[i][2])+'일  '+"-> 조만간 드셔야겠네요!^^"),fg = "dark green")
                 foodMsglabel.pack()
             else:
-                foodMsglabel = Label(top1,text=(foodlist[i],"유통기한이 넉넉하네요!! 먹고 싶을 때 드세요~^^"))
+                foodMsglabel = Label(top1,text=(str(foodlist[i][0])+' '+str(foodlist[i][1])+'개  '+str(foodlist[i][2])+'일  '+"-> 유통기한이 넉넉하네요!! 먹고 싶을 때 드세요~^^"))
                 foodMsglabel.pack()
     
     warning_message()
@@ -98,14 +98,16 @@ def expired_date_food(): #유통기한이 지난 음식을 date_expired_list에 
         listbox.insert(i,date_expired_list[i])
     listbox.pack()
 
-    btn = Button(top1, text ="삭제",command = delete_anchor)
-    btn.pack()
+    delete_expired_date_food_button = Button(top1, text ="삭제",command = delete_anchor)
+    delete_expired_date_food_button.pack()
 
-    
+erase_foodlist=[]
+update_erase_food=[]    
+
 def delete_anchor():
-    a = listbox.get(ANCHOR)
-    update_erase_food.append(list(a))
-    print(update_erase_food)
+    chosen_erase_food = listbox.get(ANCHOR)
+    update_erase_food.append(list(chosen_erase_food))
+   
     global date_expired_list
     for i in range(0, len(update_erase_food)):
         if update_erase_food[i] in date_expired_list:
@@ -113,7 +115,6 @@ def delete_anchor():
            foodlist.remove(update_erase_food[i])
            
             
-        
 def erase_food(): #먹은 음식의 이름, 수량을 입력하는 함수
     top1=Toplevel()
     top1.title("먹은 음식 지우기")
@@ -136,6 +137,7 @@ def erase_food(): #먹은 음식의 이름, 수량을 입력하는 함수
     b3 = Button(top1, text="입력완료", font=('맑은고딕','10'),command = erase_done) #erase_done이 실행됨
     b3.place(x=130,y=110)
 
+
 def erase_done(): #erase_food에서 입력된 음식과 수량만큼 foodlist에서 빼줌. 만약 다 먹었으면 foodlist에서 제외
     global erase_food
     erase_food = e_erase_food.get()
@@ -151,12 +153,13 @@ def erase_done(): #erase_food에서 입력된 음식과 수량만큼 foodlist에
                 if(foodlist[i][1]==0):
                   del foodlist[i]
 
+
 def recommend_food(): #음식 추천해주는 함수
     top1=Toplevel()
     top1.title("추천 음식")
-    top1.geometry("500x500")
+    top1.geometry("300x300")
 
-
+    global menu_dict
     menu_dict = {'호박죽' : ['단호박', '찹쌀가루', '전분', '소금', '설탕'], '계란찜' : ['계란', '소금', '파'],
             '육개장' : ['소고기', '파', '마늘', '고춧가루', '식용유', '국간장', '참기름', '후춧가루'],
             '김치찌개' : ['김치', '돼지고기', '두부', '파', '식용유', '국간장', '설탕', '소금'],
@@ -178,24 +181,61 @@ def recommend_food(): #음식 추천해주는 함수
             '꽁치조림' : ['꽁치', '무', '양파', '소금', '쌀뜨물', '간장', '고춧가루', '물엿','파', '다진 마늘', '청주', '생강', '후춧가루'],
             '간장파스타' : ['파스타면', '양파', '청양고추', '햄','버섯','올리브유','간장','다진마늘','올리고당'],
             '소세지볶음' : ['소세지','양파','피망','케찹','올리고당','진간장','참기름','다진마늘','깨','후춧가루']}
-    
-    menu_number = len(menu_dict.keys())
 
+
+    global menu_number
+    menu_number = len(menu_dict.keys()) #menu 이름의 길이
+    global recommend_menu_listbox
+    recommend_menu_listbox = Listbox(top1, selectmode = 'extended') #추천하는 메뉴 리스트박스
+    global current_ingredient_menu_list
+    current_ingredient_menu_list = [] #현재 그 메뉴에 필요한 재료 리스트
+    global recommend_menu_dict
+    recommend_menu_dict = {} #추천하는 메뉴 이름 딕셔너리
+   
     for i in range(0, menu_number):  #딕셔너리에 저장되어있는 레시피 수만큼 반복
         count = 0
-        menu_name = list(menu_dict.keys())
-        menu_ingredient = menu_dict[menu_name[i]]
+        global menu_name
+        menu_name = list(menu_dict.keys()) #메뉴 전체 이름만 리스트
+        menu_ingredient = menu_dict[menu_name[i]] #i에 해당하는 메뉴의 재료들
         
         foodlist_num = len(foodlist)
+        
         for j in range(0, foodlist_num):  #푸드 리스트에 있는 음식이 딕셔너리 value에 포함되어있는지 봐야하므로 foodlist의 개수만큼 반복
-            if foodlist[j][0] in menu_ingredient:
-                count = count + 1
-                
-        ingredient_num = len(menu_ingredient)        
-        if count >= ingredient_num/2 :
-            recommend_menu_label = Label(top1,text=(menu_name[i],'를 만들기 위한 재료가 총',count,'개 있습니다.  '))
-            recommend_menu_label.pack()
+            if foodlist[j][0] in menu_ingredient: #만약 푸드리스트에 있는 재료가 메뉴재료에 속하면                               
+                current_ingredient_menu_list.append(foodlist[j][0]) #현재 그 메뉴에 필요한 재료 리스트에 추가시킴
+                count = count + 1                #재료 개수 카운트
 
+        ingredient_num = len(menu_ingredient) 
+
+        if count >= ingredient_num/2 :
+            recommend_menu_dict[menu_name[i]] = current_ingredient_menu_list #추천하는 
+            current_ingredient_menu_list.clear()
+            count = 0
+        else :
+            current_ingredient_menu_list.clear()
+
+    recommend_menu_keys_list = list(recommend_menu_dict.keys())
+
+    for i in range(0,len(recommend_menu_keys_list)):
+        recommend_menu_listbox.insert(i, recommend_menu_keys_list[i])
+    recommend_menu_listbox.pack()
+
+    select_menu_button = Button(top1, text = '선택',command = select_menu)
+    select_menu_button.pack()
+
+
+def select_menu():
+    selected_menu_ingredient_list=[]
+    top3 = Toplevel()
+    top3.title("필요한 재료들")
+    top3.geometry("700x30")
+    selected_menu = recommend_menu_listbox.get(ANCHOR)
+    selected_menu = ''.join(selected_menu)
+    for i in range(0,len(menu_name)):
+        if menu_name[i] == selected_menu:
+            selected_menu_ingredient_list.append(menu_dict[menu_name[i]])
+            selected_menu_ingredient_label = Label(top3, text = (str(menu_dict[menu_name[i]])+"이(가) 필요합니다."))
+            selected_menu_ingredient_label.pack()
 
 
 #'음식 추가' 버튼
@@ -220,8 +260,3 @@ b_erase_food = Button(window, text = "음식 삭제", font=('맑은고딕','12')
 b_erase_food.place(x=110,y=327.5)
 
 window.mainloop()
-
-
-
-
-
